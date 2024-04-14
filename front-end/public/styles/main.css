@@ -1,0 +1,157 @@
+/* General body styling */
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+* {
+        font-family: 'Nunito Sans', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+    background-color: #f5f5f5;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+.header {
+    width: 95vw!important;
+    height: 12vh!important;
+    background: linear-gradient(135deg, #7143BE, #9EA8DE); /* Smooth gradient from purple to dark purple */
+    color: white;
+    padding: 25px;
+    margin-bottom: 25px!important;
+    top: 0;
+    left: 0;
+}
+
+.header > h2, p {
+    margin-top: 10px;
+    margin-left: 100px!important;
+}
+
+/* Container for the content */
+.container {
+    min-width: 80%;
+    max-width: 80%;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Navigation bar styling */
+.navbar {
+    background: linear-gradient(135deg, #7143BE, #9EA8DE); /* Smooth gradient from purple to dark purple */
+    overflow: hidden;
+    padding: 0;
+    margin-bottom: 40px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar a.nav-link {
+    float: left;
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    font-size: 17px;
+    transition: all 0.3s ease; /* Adding transition for smooth hover effect */
+}
+
+.navbar a.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Lighten on hover */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Add subtle dynamic shadow */
+    color: white;
+}
+
+.navbar a.nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2); /* Lighten for active state */
+    color: white;
+}
+
+/* Header styles */
+h1 {
+    color: #333;
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Adding shadow to table */
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2; /* Lighter shade for alternate rows */
+}
+
+table tr:hover {
+    background-color: rgba(0, 0, 0, 0.05); /* Hover effect for rows */
+}
+
+table td {
+    text-align: left;
+    padding: 15px;
+    border-bottom: 1px solid #eaeaea; /* Lighter borders for less visual weight */
+}
+
+/* Warnings styling */
+#warnings {
+    color: #D32F2F; /* Adjust the text color to match the image */
+    background-color: #FFCDD2; /* Light red background as shown in the image */
+    border-left: 4px solid #EF5350; /* Red accent line */
+    padding: 10px;
+    margin: 20px 0; /* Adding top and bottom margin for separation */
+    font-weight: bold; /* Making the warning text bold */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+        padding: 10px;
+    }
+
+    .navbar a.nav-link {
+        padding: 10px;
+        font-size: 15px;
+    }
+
+    .header {
+        min-width: 100vw;
+        padding: 15px; /* Adjusted padding for smaller screens */
+        margin-bottom: 15px; /* Adjusted margin for smaller screens */
+        box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    }
+
+    .header > h2 {
+        margin-top: 5px; /* Reduced margin for smaller screens */
+        margin-left: 15px; /* Adjusted margin for smaller screens */
+    }
+
+    .header > p {
+        display: none; /* Hide paragraph in mobile view */
+    }
+
+    /* Navigation bar styling */
+    .navbar {
+        margin-bottom: 15px; /* Adjusted margin for smaller screens */
+    }
+
+    /* Header styles */
+    h1 {
+        margin-bottom: 20px; /* Adjusted margin for smaller screens */
+    }
+
+    .table-responsive {
+        width: 95%;
+    }
+}

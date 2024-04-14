@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/styles/dashboard.css">
+    <link rel="stylesheet" href="/styles/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h2>SafeSpace</h2>
+        <p>Environment, Health & Safety Tool for Confined Space Entry</p>
+    </div>
+    <div class="container">
+        <nav class="navbar">
+            <a href="/" class="nav-link active">Home</a>
+            <a href="/liveData" class="nav-link">Live Data</a>
+            <a href="/sessions" class="nav-link">Session Details</a>
+        </nav>
+        <h1>Dashboard</h1>
+        <table>
+            <tr>
+                <td>Total Sessions:</td>
+                <td><%= numberOfSessions %></td>
+            </tr>
+            <tr>
+                <td>Average Wrench Time:</td>
+                <td><%= averageWrenchTime %> minutes</td>
+            </tr>
+            <tr>
+                <td>Maximum CO Level:</td>
+                <td><%= maxCO %> ppm</td>
+            </tr>
+            <tr>
+                <td>Minimum CO Level:</td>
+                <td><%= minCO %> ppm</td>
+            </tr>
+            <tr>
+                <td>Maximum LEL Level:</td>
+                <td><%= maxLEL %> % LEL</td>
+            </tr>
+            <tr>
+                <td>Minimum LEL Level:</td>
+                <td><%= minLEL %> % LEL</td>
+            </tr>
+            <tr>
+                <td>Maximum H2S Level:</td>
+                <td><%= maxH2S %> ppm</td>
+            </tr>
+            <tr>
+                <td>Minimum H2S Level:</td>
+                <td><%= minH2S %> ppm</td>
+            </tr>
+        </table>
+        <div class="chart-containers">
+            <div class="row">
+                <div class="chart-container" style="width:45%!important">
+                    <canvas id="sessionsVsEquipmentChart"></canvas>
+                </div>
+                <div class="chart-container" style="width:45%!important">
+                    <canvas id="wrenchTimeVsSessionsChart"></canvas>
+                </div>
+            </div>
+            <div class="row">
+                <div class="chart-container">
+                    <canvas id="gasLevelsChart" style="width:100%!important"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Example data - replace with your actual data
+        const sessionsData = <%- JSON.stringify({ numberOfSessions, sessions, averageWrenchTime, maxCO, minCO, maxLEL, minLEL, maxH2S, minH2S }) %>;
+    // Prepare data for charts
+const sessionNumbers = sessionsData.sessions.map(session => session.session_no);
+const COLevels = sessionsData.sessions.map(session => session.CO);
+const LELLevels = sessionsData.sessions.map(session => session.LEL);
+const H2SLevels = sessionsData.sessions.map(session => session.H2S);
+
+// Count sessions for each equipment
+const sessionsCountByEquipment = sessionsData.sessions.reduce((acc, session) => {
+  acc[session.EQPT] = (acc[session.EQPT] || 0) + 1;
+  return acc;
+}, {});
+
+// Prepare data for chart
+const equipmentLabels = Object.keys(sessionsCountByEquipment);
+const sessionsCountData = Object.values(sessionsCountByEquipment);
+
+// Create chart
+const ctxSessionsVsEquipment = document.getElementById('sessionsVsEquipmentChart').getContext('2d');
+const sessionsVsEquipmentChart = new Chart(ctxSessionsVsEquipment, {
+  type: 'line',
+  data: {
+    labels: equipmentLabels,
+    datasets: [{
+      label: 'Number of Sessions',
+      data: sessionsCountData,
+      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+      borderColor: 'rgba(75, 192, 192, 1)',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    scales: {
+      x: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Equipment'
+        }
+      },
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Number of Sessions'
+        }
+      }
+    }
+  }
+});
+
+
+// Line chart for Wrench Time vs Sessions
+const ctxWrenchTimeVsSessions = document.getElementById('wrenchTimeVsSessionsChart').getContext('2d');
+const wrenchTimeVsSessionsChart = new Chart(ctxWrenchTimeVsSessions, {
+  type: 'bar',
+  data: {
+    labels: sessionNumbers,
+    datasets: [{
+      label: 'Wrench Time',
+      data: COLevels,
+      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 1,
+      fill: false
+    }]
+  },
+  options: {
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
+});
+
+// Line chart for CO, H2S, and LEL levels
+const ctxGasLevels = document.getElementById('gasLevelsChart').getContext('2d');
+const gasLevelsChart = new Chart(ctxGasLevels, {
+  type: 'line',
+  data: {
+    labels: sessionNumbers,
+    datasets: [{
+      label: 'CO Levels',
+      data: COLevels,
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 1,
+      fill: false,
+      pointRadius: 5,
+      pointBackgroundColor: 'rgba(255, 99, 132, 1)'
+    },
+    {
+      label: 'H2S Levels',
+      data: H2SLevels,
+      borderColor: 'rgba(54, 162, 235, 1)',
+      borderWidth: 1,
+      fill: false,
+      pointRadius: 5,
+      pointBackgroundColor: 'rgba(54, 162, 235, 1)'
+    },
+    {
+      label: 'LEL Levels',
+      data: LELLevels,
+      borderColor: 'rgba(75, 192, 192, 1)',
+      borderWidth: 1,
+      fill: false,
+      pointRadius: 5,
+      pointBackgroundColor: 'rgba(75, 192, 192, 1)'
+    }]
+  },
+  options: {
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
+});      
+
+      </script>
+</body>
+</html>

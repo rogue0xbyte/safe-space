@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sessions Detail</title>
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
+    <link rel="stylesheet" href="/styles/sessions.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h2>SafeSpace</h2>
+        <p>Environment, Health & Safety Tool for Confined Space Entry</p>
+    </div>
+    <div class="container">
+        <nav class="navbar">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/liveData" class="nav-link">Live Data</a>
+            <a href="/sessions" class="nav-link active">Session Details</a>
+        </nav>
+        <h1>View Sessions</h1>
+
+    <!-- Dropdown for selecting a session -->
+    <select id="sessionSelect" onchange="displaySessionData()">
+        <option value="">Select a Session</option>
+        <% sessionData.sessions.forEach(function(session) { %>
+            <option value="<%= session.session_no %>"><%= session.TIME_IN %> - <%= session.TIME_OUT %></option>
+        <% }); %>
+    </select><br/><br/>
+
+    <!-- Container for displaying selected session data -->
+    <div class="table-responsive" id="respTable">
+        <table class="table">    
+            <tr>
+                <td colspan="2" style="text-align: center;" class="head-td"><span id="session">Selected Session</span> Details</td>
+            </tr>         
+            <tr>
+                <td colspan="2" id="sessionDetails">Select a session to view details.</td>
+            </tr>        
+            <tr>
+                <td colspan="2" style="border-bottom: solid 2px black;"><canvas id="sessionGraph" >Select a session to view details.</canvas></td>
+            </tr>
+            <tr>
+                <td class="head-td">Total Wrench Time:</td>
+                <td><%= sessionData.totalWrenchTime %> minutes</td>
+            </tr>
+            <tr>
+                <td class="head-td">Average Wrench Time:</td>
+                <td><%= sessionData.averageWrenchTime %> minutes</td>
+            </tr>
+            <tr>
+                <td class="head-td">Max CO:</td>
+                <td><%= sessionData.maxCO %> ppm</td>
+            </tr>
+            <tr>
+                <td class="head-td">Min CO:</td>
+                <td><%= sessionData.minCO %> ppm</td>
+            </tr>
+            <tr>
+                <td class="head-td">Max LEL:</td>
+                <td><%= sessionData.maxLEL %> %</td>
+            </tr>
+            <tr>
+                <td class="head-td">Min LEL:</td>
+                <td><%= sessionData.minLEL %> %</td>
+            </tr>
+            <tr>
+                <td class="head-td">Max H2S:</td>
+                <td><%= sessionData.maxH2S %> ppm</td>
+            </tr>
+            <tr>
+                <td class="head-td">Min H2S:</td>
+                <td><%= sessionData.minH2S %> ppm</td>
+            </tr>
+        </table>
+    </div>
+    <br/><hr/><br/>
+    <div class="table-responsive">
+        <table class="table" id="datatable">
+            <thead>
+                <th>Equipment</th>
+                <th>Time In</th>
+                <th>Duration</th>
+                <th class="view-col">View</th>
+            </thead>
+            <tbody>    
+                <% sessionData.sessions.forEach(function(session) { %>
+                  <tr>
+                    <td><%= session.EQPT %></td>
+                    <td><%= session.TIME_IN %></td>
+                    <td><%= ((new Date('1970-01-01T' + session.TIME_OUT + 'Z') - new Date('1970-01-01T' + session.TIME_IN + 'Z')) / 1000 / 60).toFixed(2) %> minutes</td>
+                    <td class="view-session view-col" data-session-no="<%= session.session_no %>" style="cursor: pointer; z-index: 100!important;">View Session</td>
+                  </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+    </div>
+    
+
+    <script>
+        $(document).ready(function() {
+          $('#datatable').DataTable({
+            responsive: true
+          });
+        });
+
+        window.onload = function() {
+            // Get the Session_ID parameter from the URL
+            document.getElementById('respTable').scrollLeft = document.getElementById('respTable').scrollWidth;
+            const urlParams = new URLSearchParams(window.location.search);
+            const Session_ID = urlParams.get('session');
+
+            // Set the selected option in the dropdown menu based on the Session_ID
+            if(Session_ID) {
+                document.getElementById('sessionSelect').value = Session_ID;
+                displaySessionData();
+            }
+        }
+
+        function displaySessionData() {
+            document.getElementById('respTable').scrollLeft = document.getElementById('respTable').scrollWidth;
+            var sessionId = document.getElementById('sessionSelect').value;
+            var sessionDetails = document.getElementById('sessionDetails');
+            var sessionName = document.getElementById('session');
+
+            if(sessionId) {
+                // Assuming `sessions` is an array of session objects
+                var selectedSession = <%- JSON.stringify(sessionData.sessions) %>.find(session => session.session_no == sessionId);
+                if(selectedSession) {
+                    sessionDetails.innerHTML = `
+                        <pre>Time In: ${selectedSession.TIME_IN}
+
+Time Out: ${selectedSession.TIME_OUT}
+
+Wrench Time: ${((new Date('1970-01-01T' + selectedSession.TIME_OUT + 'Z') - new Date('1970-01-01T' + selectedSession.TIME_IN + 'Z')) / 1000 / 60).toFixed(2)} minutes
+
+Average CO: ${selectedSession.CO} ppm
+
+Average LEL: ${selectedSession.LEL} %
+
+Average H2S: ${selectedSession.H2S} ppm</pre>
+                    `;
+                    session.innerHTML = `Session ${selectedSession.session_no} at ${selectedSession.EQPT}`;
+                    fetchSessionData(selectedSession);
+                }
+            } else {
+                sessionDetails.innerHTML = '<p>Select a session to view details.</p>';
+                session.innerHTML = `Selected Session`;
+                try {
+                    document.getElementById('sessionGraph').getContext('2d').destroy();
+                } catch {};
+            }
+        }
+        // Function to send request to server and populate chart
+async function fetchSessionData(sessionId) {
+  try {
+    const response = await fetch(`/history?session_id=${sessionId}`);
+    if (!response.ok) {
+      throw new Error('Error fetching session history.');
+    }
+    const sessionData = await response.json();
+    populateChart(sessionData);
+  } catch (error) {
+    console.error(error);
+    document.getElementById('sessionGraph').innerHTML = `<p>${error.message}</p>`;
+  }
+}
+
+// Function to populate chart using Chart.js
+function populateChart(sessionData) {
+  const labels = Array.from({ length: sessionData.length }, (_, i) => i + 1);
+
+  const coData = sessionData.map(data => data.CO);
+  const lelData = sessionData.map(data => data.LEL);
+  const h2sData = sessionData.map(data => data.H2S);
+
+  const ctx = document.getElementById('sessionGraph').getContext('2d');
+
+  if (ctx instanceof Chart) {
+    // If so, destroy it
+    ctx.destroy();
+  }
+
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'CO',
+          data: coData,
+          borderColor: 'rgba(255, 99, 132, 1)',
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        },
+        {
+          label: 'LEL',
+          data: lelData,
+          borderColor: 'rgba(54, 162, 235, 1)',
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        },
+        {
+          label: 'H2S',
+          data: h2sData,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+    },
+  });
+}
+
+document.querySelectorAll('.view-session').forEach(function(element) {
+  element.addEventListener('click', function() {
+  document.getElementById('sessionSelect').value = this.getAttribute('data-session-no');
+  displaySessionData();
+  document.getElementById('sessionSelect').scrollIntoView();
+  });
+});
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" href="/styles/liveData.css">
+      <link rel="stylesheet" href="/styles/main.css">
+      <title>SafeSearch Monitoring Dashboard</title>
+   </head>
+   <body>
+      <div class="header">
+         <h2>SafeSpace</h2>
+         <p>Environment, Health & Safety Tool for Confined Space Entry</p>
+      </div>
+      <div class="container">
+         <nav class="navbar">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/liveData" class="nav-link active">Live Data</a>
+            <a href="/sessions" class="nav-link">Session Details</a>
+         </nav>
+         <header>
+            <h1>Safe Space Monitoring Dashboard</h1>
+         </header>
+         <section id="sensor-details">
+            <table>
+               <tr>
+                  <th>Name:</th>
+                  <td><%= userData.name %></td>
+               </tr>
+               <tr>
+                  <th>Status:</th>
+                  <td><%= userData.status %></td>
+               </tr>
+               <tr>
+                  <th>CO Level:</th>
+                  <td><%= userData.CO_Level %> ppm</td>
+               </tr>
+               <tr>
+                  <th>LEL Level:</th>
+                  <td><%= userData.LEL_Level %> % LEL</td>
+               </tr>
+               <tr>
+                  <th>H₂S Level:</th>
+                  <td><%= userData.H2S_Level %> ppm</td>
+               </tr>
+            </table>
+         </section>
+         <section id="warnings">
+            <h2>Warnings:</h2>
+            <ul>
+               <% if(userData.warnings && userData.warnings.length > 0) { %>
+               <% userData.warnings.forEach(function(warning) { %>
+               <li><%= warning %></li>
+               <% }); %>
+               <% } else { %>
+               <li>No warnings</li>
+               <% } %>
+            </ul>
+         </section>
+      </div>
+         <footer>
+            <p>©SafeSpace - 2024</p>
+         </footer>
+      <script src="/scripts/main.js"></script>
+   </body>
+</html>

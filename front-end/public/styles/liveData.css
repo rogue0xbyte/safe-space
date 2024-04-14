@@ -1,0 +1,18 @@
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #fbeaea; /* Lighter red background */
+  border-left: 5px solid #d9534f; /* Bootstrap 'danger' color for the line */
+}
+
+footer {
+  text-align: center;
+  padding: 20px 0;
+  margin-top: 40px; /* More space before footer */
+  border-top: 1px solid #eaeaea; /* Lighter line */
+}
